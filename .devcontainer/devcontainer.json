@@ -5,7 +5,6 @@
     "image": "mcr.microsoft.com/devcontainers/go:bullseye@sha256:75d1e58f7d9ebadf7c1ae3e67fdfbefc7fb62507e3ba8e025548a808446f74fe",
     "features": {
         "ghcr.io/devcontainers/features/node:1": {},
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
         "node": {
             "version": "lts",
             "nodeGypDependencies": true
@@ -15,7 +14,7 @@
         },
         "ghcr.io/devcontainers/features/java:1": {
             "version": "17",
-            "jdkDistro": "ms"
+            "jdkDistro": "tem"
         }
     },
     "customizations": {
