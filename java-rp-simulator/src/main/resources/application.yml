@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: java-rp-simulator
+  security:
+    oauth2:
+      client:
+        registration:
+          canada-login:
+            provider: canada-login
+            client-id: ${CANADA_LOGIN_CLIENT_ID:REPLACE_ME_CLIENT_ID}
+            client-secret: ${CANADA_LOGIN_CLIENT_SECRET:REPLACE_ME_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            scope: openid, profile, email
+            redirect-uri: "{baseUrl}/login/oauth2/code/canada-login"
+        provider:
+          canada-login:
+            issuer-uri: ${CANADA_LOGIN_ISSUER_URI:https://cds-gcsignin-dev.verify.ibm.com/oauth2}
+ 
+server:
+  port: 8080
+ 
+logging:
+  level:
+    org.springframework.security: DEBUG
