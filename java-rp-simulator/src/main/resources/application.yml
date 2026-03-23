@@ -1,3 +1,6 @@
+server:
+  port: 8080
+ 
 spring:
   application:
     name: java-rp-simulator
@@ -11,13 +14,11 @@ spring:
             client-secret: ${CANADA_LOGIN_CLIENT_SECRET:REPLACE_ME_CLIENT_SECRET}
             authorization-grant-type: authorization_code
             scope: openid, profile, email
-            redirect-uri: "{baseUrl}/login/oauth2/code/canada-login"
+            redirect-uri: "${CANADA_LOGIN_REDIRECT_URI}"
         provider:
           canada-login:
+            # Single URL enables OIDC Auto-Discovery (fetches all endpoints, JWKS, etc.)
             issuer-uri: ${CANADA_LOGIN_ISSUER_URI:https://cds-gcsignin-dev.verify.ibm.com/oauth2}
- 
-server:
-  port: 8080
  
 logging:
   level:
