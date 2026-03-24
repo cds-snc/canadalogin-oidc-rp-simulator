@@ -13,6 +13,7 @@ spring:
             provider: canada-login
             client-id: ${CANADA_LOGIN_CLIENT_ID:REPLACE_ME_CLIENT_ID}
             client-secret: ${CANADA_LOGIN_CLIENT_SECRET:REPLACE_ME_CLIENT_SECRET}
+            client-authentication-method: client_secret_basic
             authorization-grant-type: authorization_code
             scope: openid, profile, email
             redirect-uri: "${CANADA_LOGIN_REDIRECT_URI}"
@@ -24,3 +25,5 @@ spring:
 logging:
   level:
     org.springframework.security: DEBUG
+    org.springframework.web.client: DEBUG
+    org.springframework.http: DEBUG
