@@ -25,4 +25,8 @@ spring:
 logging:
   level:
     org.springframework.security: DEBUG
+    org.springframework.web.client: DEBUG
+    org.apache.http: DEBUG
+    org.springframework.http.client: DEBUG
+
  

@@ -29,6 +29,7 @@ public class SecurityConfig {
                 .authorizationEndpoint(authorization -> authorization
                     .authorizationRequestResolver(pkceResolver())
                 )
+                .defaultSuccessUrl("/dashboard", true)
             )
             .logout(logout -> logout
                 .logoutSuccessUrl("/")
