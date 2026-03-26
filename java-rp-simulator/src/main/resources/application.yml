@@ -1,7 +1,9 @@
 server:
   port: 8080
   forward-headers-strategy: native
+
  
+
 spring:
   application:
     name: java-rp-simulator
@@ -17,11 +19,21 @@ spring:
             authorization-grant-type: authorization_code
             scope: openid, profile, email
             redirect-uri: "${CANADA_LOGIN_REDIRECT_URI}"
+          canada-login-post:
+            provider: canada-login
+            client-id: ${CANADA_LOGIN_POST_CLIENT_ID:REPLACE_ME_POST_CLIENT_ID}
+            client-secret: ${CANADA_LOGIN_POST_CLIENT_SECRET:REPLACE_ME_POST_CLIENT_SECRET}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            scope: openid, profile, email
+            redirect-uri: "${CANADA_LOGIN_POST_REDIRECT_URI}"
         provider:
           canada-login:
             # Single URL enables OIDC Auto-Discovery (fetches all endpoints, JWKS, etc.)
             issuer-uri: ${CANADA_LOGIN_ISSUER_URI:https://cds-gcsignin-dev.verify.ibm.com/oauth2}
+
  
+
 logging:
   level:
     org.springframework.security: DEBUG
@@ -29,4 +41,3 @@ logging:
     org.apache.http: DEBUG
     org.springframework.http.client: DEBUG
 
- 

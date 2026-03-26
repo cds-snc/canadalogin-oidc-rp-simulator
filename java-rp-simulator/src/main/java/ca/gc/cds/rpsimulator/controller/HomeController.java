@@ -12,10 +12,11 @@ public class HomeController {
     @GetMapping("/")
     public String home() {
         return "<h1>GC Sign-In Java RP Simulator</h1>" +
-               "<p><a href='/oauth2/authorization/canada-login'>Log In with CanadaLogin</a></p>";
+               "<p><a href='/oauth2/authorization/canada-login'>Log In with CanadaLogin (Basic)</a></p>" +
+               "<p><a href='/oauth2/authorization/canada-login-post'>Log In with CanadaLogin (POST)</a></p>";
     }
  
-    // Protected dashboard - only reachable after successful login
+    // Protected dashboard — only reachable after successful OIDC login
     @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal OidcUser oidcUser) {
         return "<h1>Welcome, " + oidcUser.getFullName() + "!</h1>" +
