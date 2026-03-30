@@ -1,10 +1,14 @@
 package ca.gc.cds.rpsimulator.config;
  
+import ca.gc.cds.rpsimulator.security.ClientAuthenticationFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
+import org.springframework.security.oauth2.client.endpoint.RestClientAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestCustomizers;
@@ -18,16 +22,22 @@ public class SecurityConfig {
     @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
  
+    @Autowired
+    private ClientAuthenticationFactory clientAuthenticationFactory;
+ 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/", "/error").permitAll()  // Public pages
-                .anyRequest().authenticated()                // Everything else needs login
+                .requestMatchers("/", "/error", "/.well-known/jwks.json").permitAll()
+                .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
                 .authorizationEndpoint(authorization -> authorization
                     .authorizationRequestResolver(pkceResolver())
+                )
+                .tokenEndpoint(token -> token
+                    .accessTokenResponseClient(accessTokenResponseClient())
                 )
                 .defaultSuccessUrl("/dashboard", true)
             )
@@ -39,7 +49,19 @@ public class SecurityConfig {
         return http.build();
     }
  
-    // Explicitly enable PKCE for confidential clients (client_secret_basic)
+    @Bean
+    public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
+        RestClientAuthorizationCodeTokenResponseClient client =
+            new RestClientAuthorizationCodeTokenResponseClient();
+        try {
+            client.addParametersConverter(clientAuthenticationFactory.createConverter());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load private key for private_key_jwt", e);
+        }
+        return client;
+    }
+ 
+    // Explicitly enable PKCE for all registrations
     private OAuth2AuthorizationRequestResolver pkceResolver() {
         DefaultOAuth2AuthorizationRequestResolver resolver =
             new DefaultOAuth2AuthorizationRequestResolver(

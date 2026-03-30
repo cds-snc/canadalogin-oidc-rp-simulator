@@ -1,43 +1,100 @@
 server:
+
   port: 8080
+
   forward-headers-strategy: native
 
  
 
+ 
+
+ 
+
 spring:
+
   application:
+
     name: java-rp-simulator
+
   security:
+
     oauth2:
+
       client:
+
         registration:
+
           canada-login:
+
             provider: canada-login
+
             client-id: ${CANADA_LOGIN_CLIENT_ID:REPLACE_ME_CLIENT_ID}
+
             client-secret: ${CANADA_LOGIN_CLIENT_SECRET:REPLACE_ME_CLIENT_SECRET}
+
             client-authentication-method: client_secret_basic
+
             authorization-grant-type: authorization_code
+
             scope: openid, profile, email
+
             redirect-uri: "${CANADA_LOGIN_REDIRECT_URI}"
+
           canada-login-post:
+
             provider: canada-login
+
             client-id: ${CANADA_LOGIN_POST_CLIENT_ID:REPLACE_ME_POST_CLIENT_ID}
+
             client-secret: ${CANADA_LOGIN_POST_CLIENT_SECRET:REPLACE_ME_POST_CLIENT_SECRET}
+
             client-authentication-method: client_secret_post
+
             authorization-grant-type: authorization_code
+
             scope: openid, profile, email
+
             redirect-uri: "${CANADA_LOGIN_POST_REDIRECT_URI}"
+
+          canada-login-jwt:
+
+            provider: canada-login
+
+            client-id: ${CANADA_LOGIN_JWT_CLIENT_ID:REPLACE_ME_JWT_CLIENT_ID}
+
+            client-authentication-method: private_key_jwt
+
+            authorization-grant-type: authorization_code
+
+            scope: openid, profile, email
+
+            redirect-uri: "${CANADA_LOGIN_JWT_REDIRECT_URI}"
+
         provider:
+
           canada-login:
+
             # Single URL enables OIDC Auto-Discovery (fetches all endpoints, JWKS, etc.)
+
             issuer-uri: ${CANADA_LOGIN_ISSUER_URI:https://cds-gcsignin-dev.verify.ibm.com/oauth2}
 
  
 
+ 
+
+ 
+
 logging:
+
   level:
+
     org.springframework.security: DEBUG
+
     org.springframework.web.client: DEBUG
+
     org.apache.http: DEBUG
+
     org.springframework.http.client: DEBUG
+
+ 
 

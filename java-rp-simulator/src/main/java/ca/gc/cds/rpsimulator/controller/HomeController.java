@@ -13,7 +13,8 @@ public class HomeController {
     public String home() {
         return "<h1>GC Sign-In Java RP Simulator</h1>" +
                "<p><a href='/oauth2/authorization/canada-login'>Log In with CanadaLogin (Basic)</a></p>" +
-               "<p><a href='/oauth2/authorization/canada-login-post'>Log In with CanadaLogin (POST)</a></p>";
+               "<p><a href='/oauth2/authorization/canada-login-post'>Log In with CanadaLogin (POST)</a></p>" +
+               "<p><a href='/oauth2/authorization/canada-login-jwt'>Log In with CanadaLogin (Private Key JWT)</a></p>";
     }
  
     // Protected dashboard — only reachable after successful OIDC login
@@ -26,3 +27,5 @@ public class HomeController {
                "<br><a href='/logout'>Sign Out</a>";
     }
 }
+ 
+ 
