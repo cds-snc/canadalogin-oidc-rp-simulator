@@ -9,11 +9,19 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.endpoint.RestClientAuthorizationCodeTokenResponseClient;
+import org.springframework.security.oauth2.client.oidc.authentication.OidcIdTokenDecoderFactory;
+import org.springframework.security.oauth2.client.oidc.authentication.OidcIdTokenValidator;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestCustomizers;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.JwtDecoderFactory;
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.web.SecurityFilterChain;
+ 
+import java.time.Duration;
  
 @Configuration
 @EnableWebSecurity
@@ -59,6 +67,19 @@ public class SecurityConfig {
             throw new RuntimeException("Failed to load private key for private_key_jwt", e);
         }
         return client;
+    }
+ 
+    // Clock skew tolerance — 5 minutes per CATS standard
+    @Bean
+    public JwtDecoderFactory<ClientRegistration> idTokenDecoderFactory() {
+        OidcIdTokenDecoderFactory factory = new OidcIdTokenDecoderFactory();
+        factory.setJwtValidatorFactory(clientRegistration ->
+            new DelegatingOAuth2TokenValidator<>(
+                new JwtTimestampValidator(Duration.ofMinutes(5)),
+                new OidcIdTokenValidator(clientRegistration)
+            )
+        );
+        return factory;
     }
  
     // Explicitly enable PKCE for all registrations
