@@ -369,12 +369,16 @@ async function ensureAuthenticated(req, res, next) {
 
 function handleErrorAndRedirect(req, res, err) {
 	console.log("Handling error and redirecting to /error:", err);
-	req.session.error = {
-		message: err.message,
-		stack: err.stack,
-		description: err.error_description
-	};
-	res.redirect("/error");
+	if (req.session) {
+		req.session.error = {
+			message: err.message,
+			stack: err.stack,
+			description: err.error_description
+		};
+		res.redirect("/error");
+	} else {
+		res.status(500).send(err.message || 'Internal Server Error');
+	}
 }
 
 // Global error handler (must come after all routes)
