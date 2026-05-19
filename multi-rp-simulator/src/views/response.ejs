@@ -2,112 +2,175 @@
 <html lang="<%= lang %>">
 <%- include('head')-%>
 
-<body vocab="http://schema.org/" typeof="WebPage" class="page-home">
-	<%- include('header')-%>
-	<main property="mainContentOfPage" class="container">
-		<div class="row profile">
-			<div class="col-md-12">
-				<h1 property="name" id="wb-cont"><%= title_r %> (<%= ui_config.client_label %>)</h1>
-			</div>
-		</div>
-		<br>
-		<div class="row profile">
-			<section class="col-md-12">
-				<% if ( !isLoggedIn ) {%>
-					<section class="alert alert-danger">
-						<p><%= expired_session_error %>.</p>
-					</section>				
-				<%} else {%>
-				<div class="wb-tabs">
-					<div class="tabpanels">
-						<details id="details-panel1" open="open">
-							<summary><%= auth_request_params %></summary>
-							<% if ( reqParams != null ) {%>
-							<table class="table table-striped">
-								<thead>
-									<tr>
-										<th scope="col" class="col-sm-4"><%= parameter %></th>
-										<th scope="col" class="col-sm-8"><%= value %></th>
-									</tr>
-								</thead>
-								<tbody>
-									<% Object.keys(reqParams).forEach((key) => { %>
-									<tr>
-										<td><%= key %></td> <td><%= reqParams[key] %></td>
-									</tr>
-									<% }) %>
-								</tbody>
-							</table>
-							<%}%>
-						</details>
-						<details id="details-panel2">
-							<summary><%= userinfo_label %></summary>
-							<% if ( userinfo != null ) {%>
-							<table class="table table-striped">
-								<thead>
-									<tr>
-										<th scope="col" class="col-sm-4"><%= parameter %></th>
-										<th scope="col" class="col-sm-8"><%= value %></th>
-									</tr>
-								</thead>
-								<tbody>
-									<% Object.keys(userinfo).forEach((key) => { %>
-									<tr>
-										<td><%= key %></td> <td><%= userinfo[key] %></td>
-									</tr>
-									<% }) %>
-								</tbody>
-							</table>
-							<%}%>
-						</details>
-						<details id="details-panel3">
-							<summary><%= claims_label %></summary>
-							<% if ( user != null ) {%>
-							<table class="table table-striped">
-								<thead>
-									<tr>
-										<th scope="col" class="col-sm-4"><%= parameter %></th>
-										<th scope="col" class="col-sm-8"><%= value %></th>
-									</tr>
-								</thead>
-								<tbody>
-									<% Object.keys(user).forEach((key) => { %>
-									<tr>
-										<td><%= key %></td> <td><%= user[key] %></td>
-									</tr>
-									<% }) %>
-								</tbody>
-							</table>
-							<%}%>
-						</details>
-						<details id="details-panel4">
-							<summary><%= tokenSet_label %></summary>
-							<% if ( tokenSet != null ) {%>
-							<table class="table table-striped" style="table-layout: fixed;">
-								<thead>
-									<tr>
-										<th scope="col" class="col-sm-4"><%= parameter %></th>
-										<th scope="col" class="col-sm-8"><%= value %></th>
-									</tr>
-								</thead>
-								<tbody>
-									<% Object.keys(tokenSet).forEach((key) => { %>
-									<tr style="word-wrap: break-word;">
-										<td><%= key %></td> <td><%= tokenSet[key] %></td>
-									</tr>
-									<% }) %>
-								</tbody>
-							</table>
-							<%}%>
-						</details>
+	<body vocab="http://schema.org/" typeof="WebPage" class="page-home">
+		<%- include('header')-%>
+			<main property="mainContentOfPage" class="container">
+				<div class="row profile">
+					<div class="col-md-12">
+						<h1 property="name" id="wb-cont">
+							<%= title_r %> (<%= ui_config.client_label %>)
+						</h1>
 					</div>
 				</div>
-				<%}%>
-			</section>
-		</div>
-		</div>
-		<%- include('preFooter')-%>
-	</main>
+				<br>
+				<div class="row profile">
+					<section class="col-md-12">
+						<% if ( !isLoggedIn ) {%>
+							<section class="alert alert-danger">
+								<p>
+									<%= expired_session_error %>.
+								</p>
+							</section>
+							<%} else {%>
+								<div class="wb-tabs">
+									<div class="tabpanels">
+										<details id="details-panel1" open="open">
+											<summary>
+												<%= auth_request_params %>
+											</summary>
+											<% if ( reqParams !=null ) {%>
+												<table class="table table-striped">
+													<thead>
+														<tr>
+															<th scope="col" class="col-sm-4">
+																<%= parameter %>
+															</th>
+															<th scope="col" class="col-sm-8">
+																<%= value %>
+															</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% Object.keys(reqParams).forEach((key)=> { %>
+															<tr>
+																<td>
+																	<%= key %>
+																</td>
+																<td>
+																	<%= reqParams[key] %>
+																</td>
+															</tr>
+															<% }) %>
+													</tbody>
+												</table>
+												<%}%>
+										</details>
+										<details id="details-panel2">
+											<summary>
+												<%= userinfo_label %>
+											</summary>
+											<% if ( userinfo !=null ) {%>
+												<table class="table table-striped">
+													<thead>
+														<tr>
+															<th scope="col" class="col-sm-4">
+																<%= parameter %>
+															</th>
+															<th scope="col" class="col-sm-8">
+																<%= value %>
+															</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% Object.keys(userinfo).forEach((key)=> { %>
+															<tr>
+																<td>
+																	<%= key %>
+																</td>
+																<td>
+																	<%= userinfo[key] %>
+																</td>
+															</tr>
+															<% }) %>
+													</tbody>
+												</table>
+												<%}%>
+										</details>
+										<details id="details-panel3">
+											<summary>
+												<%= claims_label %>
+											</summary>
+											<% if ( user !=null ) {%>
+												<table class="table table-striped">
+													<thead>
+														<tr>
+															<th scope="col" class="col-sm-4">
+																<%= parameter %>
+															</th>
+															<th scope="col" class="col-sm-8">
+																<%= value %>
+															</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% Object.keys(user).forEach((key)=> { %>
+															<tr>
+																<td>
+																	<%= key %>
+																</td>
+																<td>
+																	<%= user[key] %>
+																</td>
+															</tr>
+															<% }) %>
+													</tbody>
+												</table>
+												<%}%>
+										</details>
+										<details id="details-panel4">
+											<summary>
+												<%= tokenSet_label %>
+											</summary>
+											<% if ( tokenSet !=null ) {%>
+												<table class="table table-striped" style="table-layout: fixed;">
+													<thead>
+														<tr>
+															<th scope="col" class="col-sm-4">
+																<%= parameter %>
+															</th>
+															<th scope="col" class="col-sm-8">
+																<%= value %>
+															</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% Object.keys(tokenSet).forEach((key)=> { %>
+															<tr style="word-wrap: break-word;">
+																<td>
+																	<%= key %>
+																</td>
+																<td>
+																	<%= tokenSet[key] %>
+																</td>
+															</tr>
+															<% }) %>
+													</tbody>
+												</table>
+												<%}%>
+										</details>
+									</div>
 
-	<%- include('footer')-%>
-</body></html>
+								</div>
+								<%}%>
+					</section>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<a href="<%= PROFILE_MANAGEMENT_URL %>?rp_client_id=<%= IBM_VERIFY_RP_APP_ID %>"
+							class="btn btn-primary">GC
+							Profile</a>
+					</div>
+					<div class="col-md-6">
+						<a href="/logout" class="btn btn-primary">log out</a>
+					</div>
+				</div>
+				</div>
+
+				Test
+				<%- include('preFooter')-%>
+			</main>
+
+			<%- include('footer')-%>
+	</body>
+
+</html>

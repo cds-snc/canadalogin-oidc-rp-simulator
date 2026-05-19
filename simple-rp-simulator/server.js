@@ -34,7 +34,7 @@ const path = require('path');
 const app = express();
 
 const RESPONSE_TYPE = 'code';
-const SCOPE = 'openid profile email phone language';
+const SCOPE = 'openid profile email phone';
 
 
 // ========================
@@ -117,16 +117,10 @@ app.get('/login', async (req, res, next) => {
 
 	try {
 		const client = await setUpOIDC(req, res);
-		
-		// Generate PKCE parameters
-		const code_verifier = generators.codeVerifier();
-		const code_challenge = generators.codeChallenge(code_verifier);
-		
-		// Store code_verifier in session for later use in token exchange
-		req.session.code_verifier = code_verifier;
-		
-		console.log('PKCE: Generated code_verifier and code_challenge for session');
-		
+
+		if (!client) {
+			throw new Error("OIDC client setup failed");
+		}
 		const url = client.authorizationUrl({
 			scope: SCOPE,
 			state: generators.state(),
@@ -148,21 +142,21 @@ app.get(REDIRECT_URI_PATHNAME, async (req, res) => {
 	try {
 		const client = await setUpOIDC(req, res);
 		const params = client.callbackParams(req);
-		
+
 		// Retrieve the code_verifier from session for PKCE
 		const code_verifier = req.session.code_verifier;
 		if (!code_verifier) {
 			throw new Error('Missing code_verifier in session. PKCE flow may have been compromised.');
 		}
-		
+
 		console.log('PKCE: Using code_verifier from session for token exchange');
-		
+
 		const tokenSet = await client.callback(process.env.REDIRECT_URI,
-			params, { 
-				state: req.query.state, 
-				nonce: req.session.nonce,
-				code_verifier: code_verifier 
-			});
+			params, {
+			state: req.query.state,
+			nonce: req.session.nonce,
+			code_verifier: code_verifier
+		});
 		const userinfo = await client.userinfo(tokenSet.access_token);
 
 		// use SID in this sample as session id
@@ -209,6 +203,7 @@ app.get('/dashboard', ensureAuthenticated, (req, res) => {
 
 app.get("/logout", async (req, res, next) => {
 	try {
+		console.log("Logout initiated");
 		const client = await setUpOIDC(req, res);
 		const token = req.session.tokenSet;
 
@@ -259,7 +254,7 @@ app.post('/backchannel_logout', async (req, res) => {
 		// In this demo, use SID associate to session
 		if (payload.sid) {
 			await destroySessionsBySid(payload.sid);
-		} 
+		}
 
 		// Return successful response
 		return res.status(200).json({ status: 'ok' });

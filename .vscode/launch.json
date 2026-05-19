@@ -20,11 +20,12 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Debug Multi RP Simulator",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/src/rp-server.ts",
+            "program": "${workspaceFolder}/multi-rp-simulator/src/rp-server.ts",
+            "cwd": "${workspaceFolder}/multi-rp-simulator",
             "runtimeArgs": [
                 "-r",
                 "ts-node/register"
@@ -34,8 +35,9 @@
             },
             "console": "integratedTerminal",
             "restart": true,
+            "stopOnEntry": false,
             "outFiles": [
-                "${workspaceFolder}/**/*.js"
+                "${workspaceFolder}/multi-rp-simulator/**/*.js"
             ]
         }
     ]

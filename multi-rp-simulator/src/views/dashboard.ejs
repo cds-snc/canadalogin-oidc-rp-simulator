@@ -1,0 +1,58 @@
+<%- include('head') %>
+    <%- include('header') %>
+
+        <div class="container main">
+            <h3>Welcome <%= userInfo.displayName %>,</h3>
+            <p class="lead mb-5">You have successfully authenticated with IBM Security Verify.</p>
+            <p>Below is the information retrieved from the <code>userInfo</code> endpoint for the authenticated user.
+            </p>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <table class="table table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>User claims</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (const [key, val] of Object.entries(userInfo)) { %>
+                                <% if (key==='ext' ) { %>
+                                    <tr>
+                                        <td>tenantId</td>
+                                        <td>
+                                            <%= userInfo.ext.tenantId %>
+                                        </td>
+                                    </tr>
+                                    <% } else { %>
+                                        <tr>
+                                            <td>
+                                                <%= key %>
+                                            </td>
+                                            <td>
+                                                <%= val %>
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="<%= profileApp.url %>?rp_client_id=<%= profileApp.client_id %>" class="btn btn-primary">GC
+                        Profile</a>
+
+                </div>
+                <div class="col-md-6">
+                    <a href="/logout" class="btn btn-primary">log out</a>
+                </div>
+            </div>
+        </div>
+
+        <%- include('preFooter') %>
+            <%- include('footer') %>

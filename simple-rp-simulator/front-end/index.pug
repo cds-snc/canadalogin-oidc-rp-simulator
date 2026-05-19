@@ -1,10 +1,306 @@
 extends layout.pug
 
 block content
-	.container.main
-		p The sample app demonstrates how to authenticate with IBM Security Verify using the Authorization Code Flow.
-		p You can authenticate using a registered IBM Security Verify's username and password.
-		a(href='/login').btn.btn-primary log in
+	style(type="text/css").
+		.hero-section {
+			position: relative;
+			width: 100%;
+			min-height: 520px;
+			background: linear-gradient(135deg, #1a3a5c 0%, #e8788a 30%, #f4a0a0 50%, #f0c090 70%, #e8a070 100%);
+			background-size: cover;
+			background-position: center;
+			overflow: visible;
+		}
+		.hero-overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: linear-gradient(to right, rgba(40,60,80,0.3) 0%, rgba(200,120,140,0.2) 50%, rgba(240,180,160,0.1) 100%);
+		}
+		.hero-scene {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 35%;
+			height: 100%;
+			background: linear-gradient(to right, rgba(30,50,30,0.4), transparent);
+		}
+		/* Search card */
+		.search-card {
+			position: relative;
+			z-index: 10;
+			background: #fff;
+			border-radius: 8px;
+			box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+			margin-top: -120px;
+			margin-bottom: 40px;
+			padding: 0;
+			overflow: hidden;
+		}
+		/* Tabs */
+		.search-tabs {
+			display: flex;
+			border-bottom: 2px solid #e0e0e0;
+			padding: 0;
+		}
+		.search-tab {
+			flex: 1;
+			text-align: center;
+			padding: 16px 10px 12px;
+			cursor: pointer;
+			color: #666;
+			font-size: 14px;
+			font-weight: 500;
+			background: none;
+			border: none;
+			border-bottom: 3px solid transparent;
+			margin-bottom: -2px;
+			transition: all 0.2s;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 4px;
+		}
+		.search-tab:hover {
+			color: #333;
+			background: #f8f8f8;
+		}
+		.search-tab.active {
+			color: #1a5632;
+			border-bottom-color: #1a5632;
+			font-weight: 600;
+		}
+		.search-tab .tab-icon {
+			font-size: 20px;
+		}
+		/* Search form */
+		.search-form {
+			padding: 24px 30px 30px;
+		}
+		.radio-group {
+			display: flex;
+			gap: 24px;
+			margin-bottom: 20px;
+		}
+		.radio-group label {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			font-size: 14px;
+			cursor: pointer;
+			color: #333;
+		}
+		.radio-group input[type="radio"] {
+			accent-color: #1a5632;
+			width: 16px;
+			height: 16px;
+		}
+		.form-row {
+			display: flex;
+			gap: 16px;
+			align-items: flex-end;
+			flex-wrap: wrap;
+		}
+		.form-group {
+			flex: 1;
+			min-width: 140px;
+		}
+		.form-group label {
+			display: block;
+			font-size: 12px;
+			color: #666;
+			margin-bottom: 4px;
+			font-weight: 500;
+		}
+		.form-group input,
+		.form-group select {
+			width: 100%;
+			padding: 8px 12px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			font-size: 14px;
+			color: #333;
+			background: #fff;
+		}
+		.form-group input:focus,
+		.form-group select:focus {
+			outline: none;
+			border-color: #1a5632;
+			box-shadow: 0 0 0 2px rgba(26,86,50,0.15);
+		}
+		.date-group {
+			display: flex;
+			align-items: center;
+			gap: 0;
+		}
+		.date-group input {
+			border-radius: 4px 0 0 4px;
+			border-right: none;
+		}
+		.nights-badge {
+			background: #e8f5e9;
+			color: #1a5632;
+			padding: 8px 12px;
+			border: 1px solid #ccc;
+			border-left: none;
+			border-radius: 0 4px 4px 0;
+			font-size: 13px;
+			white-space: nowrap;
+			display: flex;
+			align-items: center;
+			gap: 4px;
+		}
+		.party-size-group {
+			display: flex;
+			align-items: center;
+			gap: 0;
+		}
+		.party-btn {
+			width: 34px;
+			height: 38px;
+			border: 1px solid #ccc;
+			background: #f5f5f5;
+			color: #666;
+			font-size: 16px;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.party-btn:first-child {
+			border-radius: 4px 0 0 4px;
+		}
+		.party-btn:last-child {
+			border-radius: 0 4px 4px 0;
+		}
+		.party-btn:hover {
+			background: #e8e8e8;
+		}
+		.party-input {
+			width: 40px !important;
+			text-align: center;
+			border-radius: 0 !important;
+			border-left: none !important;
+			border-right: none !important;
+		}
+		.search-btn-row {
+			display: flex;
+			justify-content: flex-end;
+			margin-top: 16px;
+		}
+		.btn-search {
+			background: #1a5632;
+			color: #fff;
+			border: none;
+			padding: 10px 28px;
+			border-radius: 4px;
+			font-size: 15px;
+			font-weight: 600;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+		.btn-search:hover {
+			background: #145228;
+		}
+		/* Discover section */
+		.discover-section {
+			padding: 40px 0 60px;
+		}
+		.discover-section h2 {
+			font-size: 28px;
+			font-weight: 700;
+			color: #333;
+		}
+
+	//- Hero banner
+	.hero-section
+		.hero-overlay
+
+	//- Search card
+	.container
+		.search-card
+			//- Tabs
+			.search-tabs
+				button.search-tab.active(type="button")
+					span.tab-icon
+						i.fas.fa-campground
+					| Frontcountry Camping
+				button.search-tab(type="button")
+					span.tab-icon
+						i.fas.fa-house-chimney
+					| Parks Canada Accommodations
+				button.search-tab(type="button")
+					span.tab-icon
+						i.fas.fa-person-hiking
+					| Backcountry
+				button.search-tab(type="button")
+					span.tab-icon
+						i.fas.fa-sun
+					| Day Use
+
+			//- Form
+			.search-form
+				.radio-group
+					label
+						input(type="radio" name="siteType" value="campsite" checked)
+						| Campsite
+					label
+						input(type="radio" name="siteType" value="group")
+						| Group Campsite
+
+				.form-row
+					.form-group
+						label Park
+						select(name="park")
+							option(value="") All Locations
+							option Banff National Park
+							option Jasper National Park
+							option Pacific Rim National Park Reserve
+							option Cape Breton Highlands
+							option Fundy National Park
+							option Prince Edward Island National Park
+
+					.form-group
+						label Arrival
+						.date-group
+							input(type="text" name="arrival" value="Thu, May 14" readonly)
+
+					.form-group
+						label Departure
+						.date-group
+							input(type="text" name="departure" value="Fri, May 15" readonly style="border-radius:4px;border-right:1px solid #ccc")
+							span.nights-badge
+								i.fas.fa-moon
+								| 1 night
+
+					.form-group(style="max-width:120px")
+						label Party Size
+						.party-size-group
+							button.party-btn(type="button") &minus;
+							input.party-input(type="text" name="partySize" value="1" readonly)
+							button.party-btn(type="button") +
+
+					.form-group
+						label Equipment
+						select(name="equipment")
+							option(value="") —
+							option Tent
+							option Trailer
+							option RV / Motorhome
+
+				.search-btn-row
+					button.btn-search(type="button")
+						i.fas.fa-search
+						| Search
+
+	//- Discover section
+	.container.discover-section
+		h2 Discover
 
 	if isAnonymous
-		p you have succuessfully logged out.
+		.container
+			p.text-muted You have successfully logged out.

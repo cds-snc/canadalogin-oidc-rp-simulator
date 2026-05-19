@@ -1,29 +1,209 @@
 html
 	head
-		title= title
-		link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous")
-		script(src='https://code.jquery.com/jquery-3.3.1.min.js')
+		title= title || 'Parks Canada Reservations'
+		meta(charset="utf-8")
+		meta(name="viewport" content="width=device-width, initial-scale=1.0")
+		link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet")
+		link(href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet")
+		script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js")
 
 		style(type="text/css").
-			.jumbotron {
-				padding: 4rem 2rem;
-				margin-bottom: 2rem;
-				background-color: var(--bs-light);
-				border-radius: .3rem;
+			:root {
+				--pc-green: #26374a;
+				--pc-dark-green: #1a4a1a;
+				--pc-header-green: #2e6b2e;
+				--pc-nav-green: #1a5632;
+				--pc-btn-green: #2e7d32;
+			}
+			body {
+				margin: 0;
+				font-family: 'Noto Sans', Arial, sans-serif;
+				color: #333;
+			}
+			/* Government of Canada bar */
+			.gc-bar {
+				background: #fff;
+				border-bottom: 1px solid #e0e0e0;
+				padding: 8px 0;
+			}
+			.gc-bar .gc-logo {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+			.gc-bar .gc-logo img {
+				height: 28px;
+			}
+			.gc-bar .gc-logo .gc-text {
+				font-size: 14px;
+				color: #333;
+				line-height: 1.2;
+			}
+			.gc-bar .gc-logo .gc-text span {
+				display: block;
+			}
+			/* Parks Canada header */
+			.pc-header {
+				background: var(--pc-nav-green);
+				padding: 12px 0;
+				color: #fff;
+			}
+			.pc-header .header-inner {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+			.pc-header .brand {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+			}
+			.pc-header .brand-logo {
+				width: 48px;
+				height: 48px;
+				background: rgba(255,255,255,0.15);
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 24px;
+			}
+			.pc-header .brand-text {
+				font-size: 20px;
+				font-weight: 400;
+			}
+			.pc-header .brand-text strong {
+				font-weight: 700;
+			}
+			.pc-header .header-links {
+				display: flex;
+				align-items: center;
+				gap: 20px;
+			}
+			.pc-header .header-links a {
+				color: #fff;
+				text-decoration: none;
+				font-size: 14px;
+				display: flex;
+				align-items: center;
+				gap: 5px;
+			}
+			.pc-header .header-links a:hover {
+				text-decoration: underline;
+			}
+			/* Navigation bar */
+			.pc-nav {
+				background: #fff;
+				border-bottom: 3px solid var(--pc-nav-green);
+				padding: 0;
+			}
+			.pc-nav .nav-inner {
+				display: flex;
+				gap: 0;
+			}
+			.pc-nav .nav-link {
+				padding: 10px 20px;
+				color: var(--pc-nav-green);
+				text-decoration: none;
+				font-size: 14px;
+				font-weight: 600;
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				border-bottom: 3px solid transparent;
+				margin-bottom: -3px;
+			}
+			.pc-nav .nav-link.active {
+				border-bottom: 3px solid var(--pc-nav-green);
+			}
+			.pc-nav .nav-link:hover {
+				background: #f5f5f5;
+			}
+			/* Footer */
+			.pc-footer {
+				background: var(--pc-nav-green);
+				color: #fff;
+				padding: 30px 0;
+			}
+			.pc-footer a {
+				color: #cce5cc;
+				text-decoration: none;
+			}
+			.pc-footer a:hover {
+				color: #fff;
+				text-decoration: underline;
 			}
 
-
-	body.d-flex.flex-column.h-100
-		.jumbotron
+	body
+		//- Government of Canada bar
+		.gc-bar
 			.container
-				h1 Relying Party
-				p The sample is using #[a(href='https://www.npmjs.com/package/openid-client?activeTab=readme' title='openid-client' target='_blank') openid-client]
+				.gc-logo
+					//- Canadian flag SVG
+					svg(xmlns="http://www.w3.org/2000/svg" width="40" height="28" viewBox="0 0 40 28")
+						rect(width="10" height="28" fill="#FF0000")
+						rect(x="10" width="20" height="28" fill="#fff")
+						rect(x="30" width="10" height="28" fill="#FF0000")
+						path(d="M20 4 L21.5 9 L18.5 9 Z M17 11 L15 14 L17 13.5 L16.5 17 L18 15 L20 18 L22 15 L23.5 17 L23 13.5 L25 14 L23 11 L24.5 11 L22 8.5 L22.5 10 L20 8 L17.5 10 L18 8.5 L15.5 11 Z" fill="#FF0000")
+					.gc-text
+						span
+							strong Government
+							|  of Canada &nbsp;|&nbsp; 
+							strong Gouvernement
+							|  du Canada
 
-		.main.flex-shrink-0.mb-5
-			block content
+		//- Parks Canada header
+		.pc-header
+			.container
+				.header-inner
+					.brand
+						.brand-logo
+							i.fas.fa-mountain-sun
+						.brand-text
+							strong Parks Canada
+							|  Reservations
+					.header-links
+						a(href="/login")
+							i.fas.fa-user-circle
+							| Sign in
+						a(href="#")
+							i.fas.fa-sync-alt
+							| Français
+						a(href="#")
+							i.fas.fa-clock
+							| System Time
+							i.fas.fa-external-link-alt(style="font-size:10px")
+						a(href="#")
+							i.fas.fa-shopping-cart
+							| Cart
 
-		footer.mt-auto.py-3.bg-dark.text-white
+		//- Navigation
+		nav.pc-nav
+			.container
+				.nav-inner
+					a.nav-link.active(href="/")
+						i.fas.fa-campground
+						| Reservations
+					a.nav-link(href="#")
+						i.fas.fa-store
+						| Store
+
+		//- Main content
+		block content
+
+		//- Footer
+		footer.pc-footer
 			.container
 				.row
-					.col
-						p.mb-0 Visit the IBM Security Verify #[a(href='https://docs.verify.ibm.com/verify/docs/authorization-code-example' title='IBM Security Verify authorization code example' target='_blank') Documentation Hub ] for more information about the Authorization code flow sample.
+					.col-md-4
+						p.mb-1
+							strong Parks Canada
+						p.mb-0.small © Parks Canada Reservations
+					.col-md-4
+						a(href="#") Contact us
+						br
+						a(href="#") Terms & Conditions
+					.col-md-4.text-md-end
+						a(href="#") Privacy
+						br
+						a(href="#") Accessibility
