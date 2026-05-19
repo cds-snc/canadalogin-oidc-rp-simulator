@@ -251,9 +251,10 @@ app.post('/backchannel_logout', async (req, res) => {
 		const payload = await validateLogoutToken(logoutToken, jwks);
 
 		// Terminate session(s)
-		// In this demo, use SID associate to session
 		if (payload.sid) {
 			await destroySessionsBySid(payload.sid);
+		} else if (payload.sub) {
+			await destroySessionsBySub(payload.sub);
 		}
 
 		// Return successful response
@@ -298,8 +299,8 @@ async function validateLogoutToken(logoutToken, jwks) {
 	//   // Mark as seen; in production persist with TTL at least until token expiry
 	//   seenJti.add(payload.jti);
 
-	// Required: sid present (In this demo, we use sid to identify session)
-	if (!payload.sid) throw new Error('must contain sid');
+	// Required: sub or sid present (per spec)
+	if (!payload.sub && !payload.sid) throw new Error('must contain sub or sid');
 
 	return payload;
 }
@@ -312,9 +313,15 @@ async function destroySessionsBySid(sid) {
 			console.error('Failed to destroy session:', err);
 		}
 	});
-	console.log('Session destroy by SID:', sid);
 }
-
+async function destroySessionsBySub(sub) {
+	// Example: find sessions by sub and destroy them
+	memoryStore.destroy(sub, (err) => {
+		if (err) {
+			console.error('Failed to destroy session:', err);
+		}
+	});
+}
 
 app.get('/debug', (req, res) => {
 	console.log('Session:', req.session);
