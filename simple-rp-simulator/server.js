@@ -34,7 +34,7 @@ const path = require('path');
 const app = express();
 
 const RESPONSE_TYPE = 'code';
-const SCOPE = 'openid profile email phone';
+const SCOPE = 'openid profile email phone language';
 
 
 // ========================
@@ -118,9 +118,15 @@ app.get('/login', async (req, res, next) => {
 	try {
 		const client = await setUpOIDC(req, res);
 
-		if (!client) {
-			throw new Error("OIDC client setup failed");
-		}
+		// Generate PKCE parameters
+		const code_verifier = generators.codeVerifier();
+		const code_challenge = generators.codeChallenge(code_verifier);
+
+		// Store code_verifier in session for later use in token exchange
+		req.session.code_verifier = code_verifier;
+
+		console.log('PKCE: Generated code_verifier and code_challenge for session');
+
 		const url = client.authorizationUrl({
 			scope: SCOPE,
 			state: generators.state(),
@@ -203,7 +209,6 @@ app.get('/dashboard', ensureAuthenticated, (req, res) => {
 
 app.get("/logout", async (req, res, next) => {
 	try {
-		console.log("Logout initiated");
 		const client = await setUpOIDC(req, res);
 		const token = req.session.tokenSet;
 
@@ -251,10 +256,9 @@ app.post('/backchannel_logout', async (req, res) => {
 		const payload = await validateLogoutToken(logoutToken, jwks);
 
 		// Terminate session(s)
+		// In this demo, use SID associate to session
 		if (payload.sid) {
 			await destroySessionsBySid(payload.sid);
-		} else if (payload.sub) {
-			await destroySessionsBySub(payload.sub);
 		}
 
 		// Return successful response
@@ -299,8 +303,8 @@ async function validateLogoutToken(logoutToken, jwks) {
 	//   // Mark as seen; in production persist with TTL at least until token expiry
 	//   seenJti.add(payload.jti);
 
-	// Required: sub or sid present (per spec)
-	if (!payload.sub && !payload.sid) throw new Error('must contain sub or sid');
+	// Required: sid present (In this demo, we use sid to identify session)
+	if (!payload.sid) throw new Error('must contain sid');
 
 	return payload;
 }
@@ -313,15 +317,9 @@ async function destroySessionsBySid(sid) {
 			console.error('Failed to destroy session:', err);
 		}
 	});
+	console.log('Session destroy by SID:', sid);
 }
-async function destroySessionsBySub(sub) {
-	// Example: find sessions by sub and destroy them
-	memoryStore.destroy(sub, (err) => {
-		if (err) {
-			console.error('Failed to destroy session:', err);
-		}
-	});
-}
+
 
 app.get('/debug', (req, res) => {
 	console.log('Session:', req.session);
