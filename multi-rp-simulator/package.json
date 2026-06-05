@@ -30,7 +30,7 @@
     "@types/openid-client": "^3.7.0",
     "dotenv": "^17.2.1",
     "ejs": "^4.0.1",
-    "express": "^4.22.1",
+    "express": "^4.22.2",
     "express-session": "^1.19.0",
     "http-errors": "^2.0.0",
     "openid-client": "^5.1.1",
