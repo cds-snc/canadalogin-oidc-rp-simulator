@@ -23,7 +23,7 @@
 	"dependencies": {
 		"dotenv": "^8.2.0",
 		"express": "^4.21.2",
-		"express-session": "^1.18.1",
+		"express-session": "^1.18.2",
 		"openid-client": "^5.6.5",
 		"pug": "^3.0.2"
 	},
