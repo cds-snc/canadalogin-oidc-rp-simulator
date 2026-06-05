@@ -39,7 +39,7 @@ jobs:
     - name: configure aws credentials using OIDC role
       uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df # v4.2.1
       with:
-        role-to-assume: arn:aws:iam::${{ vars.TEST_AWS_ACCOUNT_ID }}:role/gc-signin-oidc-rp-simulator-apply
+        role-to-assume: arn:aws:iam::${{ vars.TEST_AWS_ACCOUNT_ID }}:role/canadalogin-oidc-rp-simulator-apply
         role-session-name: ECRPush 
         aws-region: ${{ env.AWS_REGION }}
 
