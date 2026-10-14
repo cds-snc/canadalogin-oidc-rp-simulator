@@ -1,0 +1,39 @@
+name: Release pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment name, or "all"
+        required: true
+        default: dev
+        type: string
+      force-redeploy:
+        description: Deploy to all environments, even if the version hasn't changed.
+        required: false
+        default: false
+        type: boolean
+      rebuild:
+        description: Rebuild all artifacts, even if they already exist.
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  release:
+    uses: cds-snc/canadalogin-release-pipeline/.github/workflows/release__release-pipeline.yml@v1.2.4
+    with:
+      environment: ${{ inputs.environment || '' }}
+      force-redeploy: ${{ inputs.force-redeploy || false }}
+      rebuild: ${{ inputs.rebuild || false }}
+    secrets: inherit
