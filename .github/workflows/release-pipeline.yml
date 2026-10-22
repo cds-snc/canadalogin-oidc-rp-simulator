@@ -24,6 +24,7 @@ on:
         type: boolean
 
 permissions:
+  attestations: write
   contents: write
   issues: write
   pull-requests: write
@@ -31,7 +32,7 @@ permissions:
 
 jobs:
   release:
-    uses: cds-snc/canadalogin-release-pipeline/.github/workflows/release__release-pipeline.yml@v1.2.4
+    uses: cds-snc/canadalogin-release-pipeline/.github/workflows/release__release-pipeline.yml@v2.0.0
     with:
       environment: ${{ inputs.environment || '' }}
       force-redeploy: ${{ inputs.force-redeploy || false }}
