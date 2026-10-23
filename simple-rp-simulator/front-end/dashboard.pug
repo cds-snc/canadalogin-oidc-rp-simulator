@@ -1,31 +1,13 @@
 extends layout.pug
 
 block content
-	.container.main
-		h3 Welcome #{userInfo.displayName},
-		p.lead.mb-5 You have successfully authenticated with IBM Security Verify.
-		p Below is the information retrieved from the <code>userInfo</code> endpoint for the authenticated user.
-		
-	.container
-		.row
-			.col-md-8
-				table.table.table-bordered
-					thead.table-dark
-						tr
-							th User claims
-							th Value
-					tbody
-						each val, key in userInfo
-							if key === 'ext'
-								tr
-									td tenantId
-									td= userInfo.ext.tenantId
-							else
-								tr
-									td= key
-									td= val
-		.row
-			.col-md-6
-				a(href=`${profileApp.url}?rp_client_id=${profileApp.client_id}`).btn.btn-primary GC Profile
-			.col-md-6
-				a(href=`/logout`).btn.btn-primary log out
+	.page-content.dashboard-content
+		.heading-block
+			gcds-heading(tag="h1") My dashboard
+		gcds-text.prompt(size="small") Choose from the following actions:
+		nav.dashboard-links(aria-label="Dashboard actions")
+			gcds-link(href="#" size="regular") View my letters
+			gcds-link(href="#" size="regular") View applicant(s) information
+			gcds-link(href="#" size="regular") Update access to other dental benefits
+			gcds-link(href="#" size="regular") Update my contact information
+			gcds-link(href="#" size="regular") Update my communication preferences

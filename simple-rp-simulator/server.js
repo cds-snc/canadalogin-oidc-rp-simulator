@@ -73,6 +73,15 @@ app.get('/health', (req, res) => res.status(200).send('OK'));
 // const REDIRECT_URI_PATHNAME = new URL(process.env.REDIRECT_URI).pathname;
 const redirectUri = process.env.REDIRECT_URI || 'http://localhost:8080/callback';
 const REDIRECT_URI_PATHNAME = new URL(process.env.REDIRECT_URI).pathname;
+const configuredRpName = process.env.RP_NAME?.trim();
+const relyingPartyName = configuredRpName && configuredRpName.toLowerCase() !== 'undefined'
+	? configuredRpName
+	: 'Canadian Dental Care Plan';
+app.locals.rpName = relyingPartyName;
+app.use((req, res, next) => {
+	res.locals.rpName = relyingPartyName;
+	next();
+});
 
 // Function for create client 
 async function setUpOIDC(req, res) {
@@ -105,8 +114,32 @@ app.get('/', (req, res) => {
 	if (req.session.tokenSet) {
 		res.redirect("/dashboard");
 	} else {
-		res.render('index')
+		res.render('index', {
+			portalShell: true,
+			rpName: relyingPartyName,
+			title: `${relyingPartyName} account`
+		});
 	}
+});
+
+app.get('/terms', ensureAuthenticated, (req, res) => {
+	res.render('terms', { title: 'Terms of use and privacy notice statement' });
+});
+
+app.post('/terms', ensureAuthenticated, (req, res, next) => {
+	if (req.body.acknowledgement !== 'accepted') {
+		return res.status(400).render('terms', {
+			title: 'Terms of use and privacy notice statement',
+			termsError: 'Acknowledge the privacy notice and agree to the terms to continue.'
+		});
+	}
+	req.session.termsAccepted = true;
+	req.session.save((err) => {
+		if (err) {
+			return next(err);
+		}
+		res.redirect('/dashboard');
+	});
 });
 
 // Login require
@@ -183,7 +216,7 @@ app.get(REDIRECT_URI_PATHNAME, async (req, res) => {
 			// Clear the code_verifier from session as it's no longer needed
 			delete req.session.code_verifier;
 			console.log('PKCE: code_verifier cleared from session after successful token exchange');
-			res.redirect('/dashboard');
+			res.redirect('/terms');
 		});
 
 	} catch (error) {
@@ -195,16 +228,28 @@ app.get(REDIRECT_URI_PATHNAME, async (req, res) => {
 
 // Page for render userInfo
 app.get('/dashboard', ensureAuthenticated, (req, res) => {
-	const userinfo = req.session.userinfo;
-	const profileApp = {
-		url: process.env.PROFILE_MANAGEMENT_URL,
-		client_id: process.env.IBM_VERIFY_RP_CLIENT_ID
+	if (!req.session.termsAccepted) {
+		return res.redirect('/terms');
 	}
+	const userinfo = req.session.userinfo;
 	if (!userinfo) {
 		return res.redirect('/login');
 	}
 	const tokenSet = req.session.tokenSet;
-	res.render('dashboard', { userInfo: userinfo, profileApp: profileApp, tokenSet: tokenSet });
+	res.render('dashboard', { title: 'My dashboard', tokenSet: tokenSet });
+});
+
+app.get('/manage-canadalogin', ensureAuthenticated, (req, res, next) => {
+	try {
+		const profileUrl = new URL(process.env.PROFILE_MANAGEMENT_URL);
+		if (!process.env.IBM_VERIFY_RP_CLIENT_ID) {
+			throw new Error('IBM_VERIFY_RP_CLIENT_ID is required to manage CanadaLogin.');
+		}
+		profileUrl.searchParams.set('rp_client_id', process.env.IBM_VERIFY_RP_CLIENT_ID);
+		res.redirect(profileUrl.toString());
+	} catch (err) {
+		next(err);
+	}
 });
 
 app.get("/logout", async (req, res, next) => {
