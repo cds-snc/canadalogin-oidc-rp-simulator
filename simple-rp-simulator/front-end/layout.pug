@@ -1,29 +1,76 @@
-html
+doctype html
+- const rpDisplayName = typeof rpName === 'string' && rpName.trim() && rpName.trim().toLowerCase() !== 'undefined' ? rpName.trim() : 'Canadian Dental Care Plan'
+html(lang="en")
 	head
-		title= title
-		link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous")
-		script(src='https://code.jquery.com/jquery-3.3.1.min.js')
-
-		style(type="text/css").
-			.jumbotron {
-				padding: 4rem 2rem;
-				margin-bottom: 2rem;
-				background-color: var(--bs-light);
-				border-radius: .3rem;
+		meta(charset="utf-8")
+		meta(name="viewport" content="width=device-width, initial-scale=1")
+		title= title || (rpDisplayName + ' account')
+		link(rel="stylesheet" href="https://cdn.design-system.canada.ca/@gcds-core/components@1.7.0/dist/gcds/gcds.css")
+		script(type="module" src="https://cdn.design-system.canada.ca/@gcds-core/components@1.7.0/dist/gcds/gcds.esm.js")
+		style.
+			body { min-height: 100vh; margin: 0; display: flex; flex-direction: column; }
+			#main-content {
+				flex: 1;
+				--gcds-heading-h1-desktop: 700 1.75rem/1.3 "Lato", sans-serif;
+				--gcds-heading-h1-mobile: 700 1.75rem/1.3 "Lato", sans-serif;
+				--gcds-heading-h2-desktop: 700 1.25rem/1.4 "Lato", sans-serif;
+				--gcds-heading-h2-mobile: 700 1.25rem/1.4 "Lato", sans-serif;
+				--gcds-link-font-regular-desktop: 400 1rem/1.5 "Noto Sans", sans-serif;
+				--gcds-link-font-regular-mobile: 400 1rem/1.5 "Noto Sans", sans-serif;
+				--gcds-details-font-desktop: 400 1rem/1.5 "Noto Sans", sans-serif;
+				--gcds-details-font-mobile: 400 1rem/1.5 "Noto Sans", sans-serif;
+				--gcds-checkbox-label-font-desktop: 400 1rem/1.5 "Noto Sans", sans-serif;
+				--gcds-checkbox-label-font-mobile: 400 1rem/1.5 "Noto Sans", sans-serif;
 			}
-
-
-	body.d-flex.flex-column.h-100
-		.jumbotron
-			.container
-				h1 Relying Party
-				p The sample is using #[a(href='https://www.npmjs.com/package/openid-client?activeTab=readme' title='openid-client' target='_blank') openid-client]
-
-		.main.flex-shrink-0.mb-5
-			block content
-
-		footer.mt-auto.py-3.bg-dark.text-white
-			.container
-				.row
-					.col
-						p.mb-0 Visit the IBM Security Verify #[a(href='https://docs.verify.ibm.com/verify/docs/authorization-code-example' title='IBM Security Verify authorization code example' target='_blank') Documentation Hub ] for more information about the Authorization code flow sample.
+			.page-content { max-width: 65ch; margin-inline: auto; padding-block: 2rem 3rem; overflow-wrap: anywhere; }
+			.page-content gcds-text { --gcds-text-size-small-desktop: 400 1rem/1.5 "Noto Sans", sans-serif; --gcds-text-size-small-mobile: 400 1rem/1.5 "Noto Sans", sans-serif; }
+			gcds-header { --gcds-header-margin: 0; --gcds-header-brand-padding: 0.25rem 0; }
+			gcds-text { --gcds-text-size-small-desktop: 400 0.9375rem/1.5 "Noto Sans", sans-serif; --gcds-text-size-small-mobile: 400 0.9375rem/1.5 "Noto Sans", sans-serif; }
+			.service-bar { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; padding: 0.625rem max(3.125rem, calc((100% - 66.5rem) / 2)); background: #343b49; color: #fff; }
+			.service-bar gcds-text { --gcds-text-size-small-desktop: 400 0.875rem/1.5 "Noto Sans", sans-serif; --gcds-text-size-small-mobile: 400 0.875rem/1.5 "Noto Sans", sans-serif; }
+			.service-title { font-weight: 700; }
+			.service-account-links { display: flex; gap: 1.625rem; }
+			.service-account-links a { color: inherit; }
+			.dashboard-links { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: start; gap: 1rem; }
+			.portal-content { max-width: 44rem; margin-inline: auto; padding: 4.125rem 0 4.25rem; }
+			.portal-content gcds-heading {
+				--gcds-heading-h1-desktop: 700 1.75rem/1.2 "Lato", sans-serif;
+				--gcds-heading-h1-mobile: 700 1.75rem/1.2 "Lato", sans-serif;
+				--gcds-heading-h1-border-width: 2rem;
+				--gcds-heading-h1-border-height: 0.1875rem;
+				--gcds-heading-h1-border-margin: 1rem 0 0;
+				--gcds-heading-h2-desktop: 700 1.25rem/1.25 "Lato", sans-serif;
+				--gcds-heading-h2-mobile: 700 1.25rem/1.25 "Lato", sans-serif;
+			}
+			.choice-panel { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 39.5rem; margin: 2rem auto 0; padding: 0.25rem; border: 0.0625rem solid #d1d1d1; box-shadow: 0 0 0 0.3125rem #f4f4f4; }
+			.choice { min-height: 6.25rem; padding: 1.75rem 2rem 2.75rem; }
+			.choice + .choice { position: relative; }
+			.choice + .choice::after { content: ""; position: absolute; top: 1.25rem; bottom: 0.25rem; left: 0; width: 0.0625rem; background: #777; }
+			.choice + .choice::before { content: "or"; position: absolute; z-index: 1; top: 1.25rem; left: 0; transform: translate(-50%, -50%); width: 1.875rem; height: 1.875rem; border: 0.125rem solid #777; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 0.875rem; font-weight: 700; }
+			.choice gcds-button { --gcds-button-small-font-desktop: 400 0.875rem/1.2 "Lato", sans-serif; --gcds-button-small-font-mobile: 400 0.875rem/1.2 "Lato", sans-serif; --gcds-button-small-padding: 0.5rem 0.75rem; --gcds-button-width: 100%; display: block; }
+			@media (max-width: 48rem) {
+				.portal-content { max-width: 29.5rem; padding: 2.25rem 0 3rem; }
+				.choice-panel { max-width: 26.5rem; }
+			}
+			@media (max-width: 36rem) {
+				.service-bar { align-items: flex-start; flex-direction: column; gap: 0.5rem; padding: 0.5rem 1.75rem; }
+				.service-account-links { gap: 1.125rem; }
+				.portal-content { padding: 2rem 1rem 3rem; }
+				.choice-panel { grid-template-columns: 1fr; }
+				.choice { min-height: auto; }
+				.choice + .choice::after { top: 0; right: 0; bottom: auto; width: auto; height: 0.0625rem; }
+				.choice + .choice::before { top: 0; left: 50%; transform: translate(-50%, -50%); }
+			}
+	body
+		gcds-header(lang-href="#" skip-to-href="#main-content")
+		.service-bar
+			gcds-text.service-title(size="small" text-role="light" margin-bottom="0")= rpDisplayName + ' account'
+			if !portalShell
+				nav.service-account-links(aria-label="Account")
+					a(href="/manage-canadalogin") Manage CanadaLogin
+					a(href="/logout") Sign out
+		main#main-content
+			gcds-container(layout="page")
+				block content
+		- const footerLinks = { [`About ${rpDisplayName}`]: '#', Help: '#', Privacy: '#', 'Terms and Conditions': '#' }
+		gcds-footer(display="compact" sub-links=JSON.stringify(footerLinks))
