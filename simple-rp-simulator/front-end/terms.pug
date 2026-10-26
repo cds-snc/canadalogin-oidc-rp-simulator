@@ -25,5 +25,6 @@ block content
 				gcds-text(size="small" margin-bottom="0") Use CanadaLogin only for lawful and authorized purposes.
 		gcds-details(details-title="Full privacy notice statement")
 		form(action="/terms" method="post")
+			input(type="hidden" name="_csrf" value=csrfToken)
 			gcds-checkboxes.acknowledgement(name="acknowledgement" error-message=termsError options='[{"id":"terms-acknowledgement","value":"accepted","label":"I acknowledge that I have read the privacy notice, and I have read and agree to the Terms."}]')
 			gcds-button(type="submit" size="small") Continue

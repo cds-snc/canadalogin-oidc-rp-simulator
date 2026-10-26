@@ -29,7 +29,7 @@ require('dotenv').config();
 
 const { Issuer, generators, TokenSet } = require('openid-client');
 const { createRemoteJWKSet, jwtVerify } = require('jose');
-const crpto = require('crypto');
+const crypto = require('crypto');
 const path = require('path');
 const app = express();
 
@@ -52,13 +52,13 @@ app.use(session({
 	cookie: {
 		secure: process.env.NODE_ENV === 'production',
 		sameSite: 'lax',
-		httpOnly: process.env.NODE_ENV === 'production'
+		httpOnly: true
 	},
 	genid: (req) => {
 		if (req.oidcSID)
 			return req.oidcSID;
 		else
-			return crpto.randomUUID();
+			return crypto.randomUUID();
 	},
 }));
 
@@ -123,14 +123,18 @@ app.get('/', (req, res) => {
 });
 
 app.get('/terms', ensureAuthenticated, (req, res) => {
-	res.render('terms', { title: 'Terms of use and privacy notice statement' });
+	res.render('terms', {
+		title: 'Terms of use and privacy notice statement',
+		csrfToken: getCsrfToken(req)
+	});
 });
 
-app.post('/terms', ensureAuthenticated, (req, res, next) => {
+app.post('/terms', verifyCsrfToken, ensureAuthenticated, (req, res, next) => {
 	if (req.body.acknowledgement !== 'accepted') {
 		return res.status(400).render('terms', {
 			title: 'Terms of use and privacy notice statement',
-			termsError: 'Acknowledge the privacy notice and agree to the terms to continue.'
+			termsError: 'Acknowledge the privacy notice and agree to the terms to continue.',
+			csrfToken: getCsrfToken(req)
 		});
 	}
 	req.session.termsAccepted = true;
@@ -420,6 +424,30 @@ async function ensureAuthenticated(req, res, next) {
 
 		handleErrorAndRedirect(req, res, err);
 	}
+}
+
+function getCsrfToken(req) {
+	if (!req.session.csrfToken) {
+		req.session.csrfToken = crypto.randomBytes(32).toString('hex');
+	}
+	return req.session.csrfToken;
+}
+
+function verifyCsrfToken(req, res, next) {
+	const submittedToken = req.body && req.body._csrf;
+	const sessionToken = req.session.csrfToken;
+
+	if (typeof submittedToken !== 'string' || typeof sessionToken !== 'string') {
+		return res.status(403).send('Invalid CSRF token');
+	}
+
+	const submittedBuffer = Buffer.from(submittedToken);
+	const sessionBuffer = Buffer.from(sessionToken);
+	if (submittedBuffer.length !== sessionBuffer.length || !crypto.timingSafeEqual(submittedBuffer, sessionBuffer)) {
+		return res.status(403).send('Invalid CSRF token');
+	}
+
+	next();
 }
 
 function handleErrorAndRedirect(req, res, err) {
