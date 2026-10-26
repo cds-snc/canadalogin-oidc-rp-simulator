@@ -9,29 +9,14 @@ html(lang="en")
 		script(type="module" src="https://cdn.design-system.canada.ca/@gcds-core/components@1.7.0/dist/gcds/gcds.esm.js")
 		style.
 			body { min-height: 100vh; margin: 0; display: flex; flex-direction: column; }
-			#main-content {
-				flex: 1;
-				--gcds-heading-h1-desktop: 700 1.75rem/1.3 "Lato", sans-serif;
-				--gcds-heading-h1-mobile: 700 1.75rem/1.3 "Lato", sans-serif;
-				--gcds-heading-h2-desktop: 700 1.25rem/1.4 "Lato", sans-serif;
-				--gcds-heading-h2-mobile: 700 1.25rem/1.4 "Lato", sans-serif;
-				--gcds-link-font-regular-desktop: 400 1rem/1.5 "Noto Sans", sans-serif;
-				--gcds-link-font-regular-mobile: 400 1rem/1.5 "Noto Sans", sans-serif;
-				--gcds-details-font-desktop: 400 1rem/1.5 "Noto Sans", sans-serif;
-				--gcds-details-font-mobile: 400 1rem/1.5 "Noto Sans", sans-serif;
-				--gcds-checkbox-label-font-desktop: 400 1rem/1.5 "Noto Sans", sans-serif;
-				--gcds-checkbox-label-font-mobile: 400 1rem/1.5 "Noto Sans", sans-serif;
-			}
-			.page-content, .error-content { width: 100%; max-width: 72rem; box-sizing: border-box; margin-inline: auto; padding: 2rem clamp(1rem, 4vw, 2.5rem) 3rem; overflow-wrap: anywhere; }
-			.page-content gcds-text { --gcds-text-size-small-desktop: 400 1rem/1.5 "Noto Sans", sans-serif; --gcds-text-size-small-mobile: 400 1rem/1.5 "Noto Sans", sans-serif; }
-			gcds-header { --gcds-header-margin: 0; --gcds-header-brand-padding: 0.5rem 0; }
-			gcds-text { --gcds-text-size-small-desktop: 400 0.9375rem/1.5 "Noto Sans", sans-serif; --gcds-text-size-small-mobile: 400 0.9375rem/1.5 "Noto Sans", sans-serif; }
-			.service-bar { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; padding: 0.875rem max(1rem, calc((100% - 72rem) / 2)); background: #343b49; color: #fff; }
-			.service-bar gcds-text { --gcds-text-size-small-desktop: 400 0.9375rem/1.5 "Noto Sans", sans-serif; --gcds-text-size-small-mobile: 400 0.9375rem/1.5 "Noto Sans", sans-serif; }
+			#main-content { flex: 1; }
+			.page-content, .error-content { width: 100%; max-width: 72rem; box-sizing: border-box; margin-inline: auto; padding: 3rem clamp(1rem, 4vw, 2.5rem) 3rem; overflow-wrap: anywhere; }
+			.terms-content form { margin-top: 2rem; }
+			gcds-header { --gcds-header-margin: 0; --gcds-header-brand-padding: 0.5rem 0; font-family: "Noto Sans", sans-serif; }
+			.service-bar { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; padding: 0.875rem max(1rem, calc((100% - 72rem) / 2)); background: #343b49; color: #fff; font-family: "Noto Sans", sans-serif; }
 			.service-bar .service-title { margin-inline-start: 0; }
-			.service-title { font-weight: 700; }
 			.service-account-links { display: flex; gap: 1.625rem; }
-			.service-account-links a, .service-account-links a:hover { color: inherit; text-decoration: none; }
+			.service-account-links a, .service-account-links a:hover, .service-account-links a:visited { color: #fff; font: 400 1.25rem/1.2 "Noto Sans", sans-serif; text-decoration: none; }
 			.dashboard-links { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: start; gap: 1rem; }
 			.portal-content { width: 100%; max-width: 72rem; box-sizing: border-box; margin-inline: auto; padding: 4.125rem clamp(1rem, 4vw, 2.5rem) 4.25rem; }
 			.portal-content gcds-heading {

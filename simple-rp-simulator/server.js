@@ -233,7 +233,7 @@ app.get('/dashboard', ensureAuthenticated, (req, res) => {
 	}
 	const userinfo = req.session.userinfo;
 	if (!userinfo) {
-		return res.redirect('/login');
+		return res.redirect('/');
 	}
 	const tokenSet = req.session.tokenSet;
 	res.render('dashboard', { title: 'My dashboard', tokenSet: tokenSet });
@@ -401,12 +401,15 @@ async function refreshAccessToken(req, res) {
 async function ensureAuthenticated(req, res, next) {
 	try {
 		if (!req.session.tokenSet) {
-			return res.redirect("/login");
+			return res.redirect("/");
 		}
 		const tokenSet = new TokenSet(req.session.tokenSet);
 		if (!tokenSet.refresh_token && tokenSet.expired()) {
-			console.info("Access token expired without a refresh token; signing in again.");
-			return res.redirect("/login");
+			console.info("Access token expired without a refresh token; returning to the index.");
+			delete req.session.tokenSet;
+			delete req.session.userinfo;
+			delete req.session.termsAccepted;
+			return res.redirect("/");
 		}
 		// purpose of the refresh token is get the users updated values
 		await refreshAccessToken(req, res);
