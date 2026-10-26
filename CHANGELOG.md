@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/compare/v1.1.0...v1.1.1) (2026-10-26)
+
+
+### Bug Fixes
+
+* upgrade Node to 24.22.1 ([329fee2](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/commit/329fee2cb7a06000b69d66b83aca637c9041f13c))
+
 ## [1.1.0](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/compare/v1.0.0...v1.1.0) (2026-10-15)
 
 
