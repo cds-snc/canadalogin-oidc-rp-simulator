@@ -9,9 +9,12 @@ block content
 			li
 				gcds-text(size="small")
 					a(href="#") Canadian Dental Care Plan
-					|  uses CanadaLogin for identity and authentication management. CanadaLogin is managed by Employment and Social Development Canada and has its own privacy notice statement and terms of use. By accessing Canadian Dental Care Plan with your CanadaLogin you are subject to its terms.
+					|  uses CanadaLogin for identity and authentication management. CanadaLogin is managed by Employment and Social Development Canada and has its own privacy notice statement and terms of use.
+					|  By accessing #{' '}
+					|
+					a(href="#") Canadian Dental Care Plan
+					|  with your CanadaLogin you are subject to its terms.
 		gcds-details(details-title="Full terms of use")
-			gcds-text(size="small") Use this service only for lawful and authorized purposes. Keep your account details secure and provide accurate information when using the portal.
 		gcds-heading(tag="h2" margin-top="300") Privacy Notice Statement
 		ul
 			li
@@ -21,7 +24,6 @@ block content
 			li
 				gcds-text(size="small") Use CanadaLogin only for lawful and authorized purposes.
 		gcds-details(details-title="Full privacy notice statement")
-			gcds-text(size="small") Your information is used to authenticate your identity and provide access to this service. Information is handled in accordance with applicable privacy requirements.
 		form(action="/terms" method="post")
-			gcds-checkboxes.acknowledgement(name="acknowledgement" required error-message=termsError options='[{"id":"terms-acknowledgement","value":"accepted","label":"I acknowledge that I have read the privacy notice, and I have read and agree to the Terms."}]')
+			gcds-checkboxes.acknowledgement(name="acknowledgement" error-message=termsError options='[{"id":"terms-acknowledgement","value":"accepted","label":"I acknowledge that I have read the privacy notice, and I have read and agree to the Terms."}]')
 			gcds-button(type="submit" size="small") Continue

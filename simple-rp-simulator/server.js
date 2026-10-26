@@ -27,7 +27,7 @@ const session = require('express-session');
 const memoryStore = new session.MemoryStore();
 require('dotenv').config();
 
-const { Issuer, generators } = require('openid-client');
+const { Issuer, generators, TokenSet } = require('openid-client');
 const { createRemoteJWKSet, jwtVerify } = require('jose');
 const crpto = require('crypto');
 const path = require('path');
@@ -384,26 +384,28 @@ async function refreshAccessToken(req, res) {
 	const tokenSet = req.session.tokenSet;
 
 	if (!tokenSet?.refresh_token) {
-		throw new Error("No refresh token available");
+		req.session.userinfo = await client.userinfo(tokenSet.access_token);
+		return tokenSet;
 	}
 
-	try {
-		const refreshed = await client.refresh(tokenSet.refresh_token);
-		const userinfo = await client.userinfo(refreshed.access_token);
+	const refreshed = await client.refresh(tokenSet.refresh_token);
+	const userinfo = await client.userinfo(refreshed.access_token);
 
-		req.session.tokenSet = refreshed; // overwrite with fresh tokens
-		req.session.userinfo = userinfo; // Save userinfo in session
-		console.log("Access token refreshed");
-		return refreshed;
-	} catch (err) {
-		console.error("Failed to refresh access token:", err);
-		handleErrorAndRedirect(req, res, err);
-	}
+	refreshed.refresh_token = refreshed.refresh_token || tokenSet.refresh_token;
+	req.session.tokenSet = refreshed;
+	req.session.userinfo = userinfo;
+	console.log("Access token refreshed");
+	return refreshed;
 }
 
 async function ensureAuthenticated(req, res, next) {
 	try {
 		if (!req.session.tokenSet) {
+			return res.redirect("/login");
+		}
+		const tokenSet = new TokenSet(req.session.tokenSet);
+		if (!tokenSet.refresh_token && tokenSet.expired()) {
+			console.info("Access token expired without a refresh token; signing in again.");
 			return res.redirect("/login");
 		}
 		// purpose of the refresh token is get the users updated values
