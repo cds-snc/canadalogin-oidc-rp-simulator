@@ -27,9 +27,9 @@ const session = require('express-session');
 const memoryStore = new session.MemoryStore();
 require('dotenv').config();
 
-const { Issuer, generators } = require('openid-client');
+const { Issuer, generators, TokenSet } = require('openid-client');
 const { createRemoteJWKSet, jwtVerify } = require('jose');
-const crpto = require('crypto');
+const crypto = require('crypto');
 const path = require('path');
 const app = express();
 
@@ -52,13 +52,13 @@ app.use(session({
 	cookie: {
 		secure: process.env.NODE_ENV === 'production',
 		sameSite: 'lax',
-		httpOnly: process.env.NODE_ENV === 'production'
+		httpOnly: true
 	},
 	genid: (req) => {
 		if (req.oidcSID)
 			return req.oidcSID;
 		else
-			return crpto.randomUUID();
+			return crypto.randomUUID();
 	},
 }));
 
@@ -73,6 +73,15 @@ app.get('/health', (req, res) => res.status(200).send('OK'));
 // const REDIRECT_URI_PATHNAME = new URL(process.env.REDIRECT_URI).pathname;
 const redirectUri = process.env.REDIRECT_URI || 'http://localhost:8080/callback';
 const REDIRECT_URI_PATHNAME = new URL(process.env.REDIRECT_URI).pathname;
+const configuredRpName = process.env.RP_NAME?.trim();
+const relyingPartyName = configuredRpName && configuredRpName.toLowerCase() !== 'undefined'
+	? configuredRpName
+	: 'Canadian Dental Care Plan';
+app.locals.rpName = relyingPartyName;
+app.use((req, res, next) => {
+	res.locals.rpName = relyingPartyName;
+	next();
+});
 
 // Function for create client 
 async function setUpOIDC(req, res) {
@@ -105,8 +114,36 @@ app.get('/', (req, res) => {
 	if (req.session.tokenSet) {
 		res.redirect("/dashboard");
 	} else {
-		res.render('index')
+		res.render('index', {
+			portalShell: true,
+			rpName: relyingPartyName,
+			title: `${relyingPartyName} account`
+		});
 	}
+});
+
+app.get('/terms', ensureAuthenticated, (req, res) => {
+	res.render('terms', {
+		title: 'Terms of use and privacy notice statement',
+		csrfToken: getCsrfToken(req)
+	});
+});
+
+app.post('/terms', verifyCsrfToken, ensureAuthenticated, (req, res, next) => {
+	if (req.body.acknowledgement !== 'accepted') {
+		return res.status(400).render('terms', {
+			title: 'Terms of use and privacy notice statement',
+			termsError: 'Acknowledge the privacy notice and agree to the terms to continue.',
+			csrfToken: getCsrfToken(req)
+		});
+	}
+	req.session.termsAccepted = true;
+	req.session.save((err) => {
+		if (err) {
+			return next(err);
+		}
+		res.redirect('/dashboard');
+	});
 });
 
 // Login require
@@ -183,7 +220,7 @@ app.get(REDIRECT_URI_PATHNAME, async (req, res) => {
 			// Clear the code_verifier from session as it's no longer needed
 			delete req.session.code_verifier;
 			console.log('PKCE: code_verifier cleared from session after successful token exchange');
-			res.redirect('/dashboard');
+			res.redirect('/terms');
 		});
 
 	} catch (error) {
@@ -195,16 +232,28 @@ app.get(REDIRECT_URI_PATHNAME, async (req, res) => {
 
 // Page for render userInfo
 app.get('/dashboard', ensureAuthenticated, (req, res) => {
-	const userinfo = req.session.userinfo;
-	const profileApp = {
-		url: process.env.PROFILE_MANAGEMENT_URL,
-		client_id: process.env.IBM_VERIFY_RP_CLIENT_ID
+	if (!req.session.termsAccepted) {
+		return res.redirect('/terms');
 	}
+	const userinfo = req.session.userinfo;
 	if (!userinfo) {
-		return res.redirect('/login');
+		return res.redirect('/');
 	}
 	const tokenSet = req.session.tokenSet;
-	res.render('dashboard', { userInfo: userinfo, profileApp: profileApp, tokenSet: tokenSet });
+	res.render('dashboard', { title: 'My dashboard', tokenSet: tokenSet });
+});
+
+app.get('/manage-canadalogin', ensureAuthenticated, (req, res, next) => {
+	try {
+		const profileUrl = new URL(process.env.PROFILE_MANAGEMENT_URL);
+		if (!process.env.IBM_VERIFY_RP_CLIENT_ID) {
+			throw new Error('IBM_VERIFY_RP_CLIENT_ID is required to manage CanadaLogin.');
+		}
+		profileUrl.searchParams.set('rp_client_id', process.env.IBM_VERIFY_RP_CLIENT_ID);
+		res.redirect(profileUrl.toString());
+	} catch (err) {
+		next(err);
+	}
 });
 
 app.get("/logout", async (req, res, next) => {
@@ -339,27 +388,32 @@ async function refreshAccessToken(req, res) {
 	const tokenSet = req.session.tokenSet;
 
 	if (!tokenSet?.refresh_token) {
-		throw new Error("No refresh token available");
+		req.session.userinfo = await client.userinfo(tokenSet.access_token);
+		return tokenSet;
 	}
 
-	try {
-		const refreshed = await client.refresh(tokenSet.refresh_token);
-		const userinfo = await client.userinfo(refreshed.access_token);
+	const refreshed = await client.refresh(tokenSet.refresh_token);
+	const userinfo = await client.userinfo(refreshed.access_token);
 
-		req.session.tokenSet = refreshed; // overwrite with fresh tokens
-		req.session.userinfo = userinfo; // Save userinfo in session
-		console.log("Access token refreshed");
-		return refreshed;
-	} catch (err) {
-		console.error("Failed to refresh access token:", err);
-		handleErrorAndRedirect(req, res, err);
-	}
+	refreshed.refresh_token = refreshed.refresh_token || tokenSet.refresh_token;
+	req.session.tokenSet = refreshed;
+	req.session.userinfo = userinfo;
+	console.log("Access token refreshed");
+	return refreshed;
 }
 
 async function ensureAuthenticated(req, res, next) {
 	try {
 		if (!req.session.tokenSet) {
-			return res.redirect("/login");
+			return res.redirect("/");
+		}
+		const tokenSet = new TokenSet(req.session.tokenSet);
+		if (!tokenSet.refresh_token && tokenSet.expired()) {
+			console.info("Access token expired without a refresh token; returning to the index.");
+			delete req.session.tokenSet;
+			delete req.session.userinfo;
+			delete req.session.termsAccepted;
+			return res.redirect("/");
 		}
 		// purpose of the refresh token is get the users updated values
 		await refreshAccessToken(req, res);
@@ -370,6 +424,30 @@ async function ensureAuthenticated(req, res, next) {
 
 		handleErrorAndRedirect(req, res, err);
 	}
+}
+
+function getCsrfToken(req) {
+	if (!req.session.csrfToken) {
+		req.session.csrfToken = crypto.randomBytes(32).toString('hex');
+	}
+	return req.session.csrfToken;
+}
+
+function verifyCsrfToken(req, res, next) {
+	const submittedToken = req.body && req.body._csrf;
+	const sessionToken = req.session.csrfToken;
+
+	if (typeof submittedToken !== 'string' || typeof sessionToken !== 'string') {
+		return res.status(403).send('Invalid CSRF token');
+	}
+
+	const submittedBuffer = Buffer.from(submittedToken);
+	const sessionBuffer = Buffer.from(sessionToken);
+	if (submittedBuffer.length !== sessionBuffer.length || !crypto.timingSafeEqual(submittedBuffer, sessionBuffer)) {
+		return res.status(403).send('Invalid CSRF token');
+	}
+
+	next();
 }
 
 function handleErrorAndRedirect(req, res, err) {
