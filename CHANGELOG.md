@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/compare/v1.1.1...v1.2.0) (2026-10-27)
+
+
+### Features
+
+* Update RP Sim to simulate a redirect from and to CDCP as part o… ([#105](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/issues/105)) ([f83ce67](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/commit/f83ce67fb9e9ae1041cfc87ab841719c256c7de8))
+
 ## [1.1.1](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/compare/v1.1.0...v1.1.1) (2026-10-26)
 
 
