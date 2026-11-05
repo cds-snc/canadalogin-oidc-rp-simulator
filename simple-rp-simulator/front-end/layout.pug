@@ -10,15 +10,16 @@ html(lang="en")
 		style.
 			body { min-height: 100vh; margin: 0; display: flex; flex-direction: column; }
 			#main-content { flex: 1; }
-			.page-content, .error-content { width: 100%; max-width: 72rem; box-sizing: border-box; margin-inline: auto; padding: 3rem clamp(1rem, 4vw, 2.5rem) 3rem; overflow-wrap: anywhere; }
+			.page-content, .error-content { padding-block: 3rem; overflow-wrap: anywhere; }
 			.terms-content form { margin-top: 2rem; }
 			gcds-header { --gcds-header-margin: 0; --gcds-header-brand-padding: 0.5rem 0; font-family: "Noto Sans", sans-serif; }
-			.service-bar { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; padding: 0.875rem max(1rem, calc((100% - 72rem) / 2)); background: #343b49; color: #fff; font-family: "Noto Sans", sans-serif; }
+			.service-bar { padding-block: 0.875rem; background: #343b49; color: #fff; font-family: "Noto Sans", sans-serif; }
+			.service-bar-content { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; }
 			.service-bar .service-title { margin-inline-start: 0; }
 			.service-account-links { display: flex; gap: 1.625rem; }
 			.service-account-links a, .service-account-links a:hover, .service-account-links a:visited { color: #fff; font: 400 "Noto Sans", sans-serif; text-decoration: none; }
 			.dashboard-links { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: start; gap: 1rem; }
-			.portal-content { width: 100%; max-width: 72rem; box-sizing: border-box; margin-inline: auto; padding: 4.125rem clamp(1rem, 4vw, 2.5rem) 4.25rem; }
+			.portal-content { padding-block: 4.125rem 4.25rem; }
 			.portal-content gcds-heading {
 				--gcds-heading-h1-desktop: 700 1.75rem/1.2 "Lato", sans-serif;
 				--gcds-heading-h1-mobile: 700 1.75rem/1.2 "Lato", sans-serif;
@@ -38,9 +39,10 @@ html(lang="en")
 				.portal-content { padding-block: 2.25rem 3rem; }
 			}
 			@media (max-width: 36rem) {
-				.service-bar { align-items: flex-start; flex-direction: column; gap: 0.5rem; padding: 0.75rem 1rem; }
+				.service-bar { padding-block: 0.75rem; }
+				.service-bar-content { align-items: flex-start; flex-direction: column; gap: 0.5rem; }
 				.service-account-links { gap: 1.125rem; }
-				.portal-content { padding: 2rem 1rem 3rem; }
+				.portal-content { padding-block: 2rem 3rem; }
 				.choice-panel { grid-template-columns: 1fr; }
 				.choice { min-height: auto; }
 				.choice + .choice::after { top: 0; right: 0; bottom: auto; width: auto; height: 0.0625rem; }
@@ -49,11 +51,13 @@ html(lang="en")
 	body
 		gcds-header(lang-href="#" skip-to-href="#main-content")
 		.service-bar
-			gcds-text.service-title(size="small" text-role="light" margin-bottom="0")= rpDisplayName + ' account'
-			if !portalShell
-				nav.service-account-links(aria-label="Account")
-					a(href="/manage-canadalogin") Manage CanadaLogin
-					a(href="/logout") Sign out
+			gcds-container(layout="page")
+				.service-bar-content
+					gcds-text.service-title(size="small" text-role="light" margin-bottom="0")= rpDisplayName + ' account'
+					if !portalShell
+						nav.service-account-links(aria-label="Account")
+							a(href="/manage-canadalogin") Manage CanadaLogin
+							a(href="/logout") Sign out
 		main#main-content
 			gcds-container(layout="page")
 				block content
