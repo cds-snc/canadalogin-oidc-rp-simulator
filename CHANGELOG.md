@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/compare/v1.2.0...v1.3.0) (2026-11-05)
+
+
+### Features
+
+* update branding to match figma ([#112](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/issues/112)) ([12161bf](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/commit/12161bf967b57811887490012b4c66f43b341d58))
+
 ## [1.2.0](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/compare/v1.1.1...v1.2.0) (2026-10-27)
 
 
