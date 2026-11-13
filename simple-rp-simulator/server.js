@@ -73,6 +73,7 @@ app.get('/health', (req, res) => res.status(200).send('OK'));
 // const REDIRECT_URI_PATHNAME = new URL(process.env.REDIRECT_URI).pathname;
 const redirectUri = process.env.REDIRECT_URI || 'http://localhost:8080/callback';
 const REDIRECT_URI_PATHNAME = new URL(redirectUri).pathname;
+const profileManagementApp = process.env.PROFILE_MANAGEMENTAPP || 'http://localhost:3000';
 const configuredRpName = process.env.RP_NAME?.trim();
 const relyingPartyName = configuredRpName && configuredRpName.toLowerCase() !== 'undefined'
 	? configuredRpName
@@ -112,7 +113,7 @@ async function setUpOIDC(req, res) {
 // Home route
 app.get('/', (req, res) => {
 	if (req.session.tokenSet) {
-		res.redirect("/dashboard");
+		res.redirect(`${profileManagementApp}/en/identity-verification`);
 	} else {
 		res.render('index', {
 			portalShell: true,
@@ -231,7 +232,9 @@ app.get(REDIRECT_URI_PATHNAME, async (req, res) => {
 			req.session.tokenSet = tokenSet; // Save tokenSet in session
 			req.session.userinfo = userinfo; // Save userinfo in session
 			req.session.oidcTransactions = transactions;
-			res.redirect('/terms');
+			const redirectUrl = new URL(`${profileManagementApp}/en/identity-verification`);
+			redirectUrl.searchParams.set('rp_client_id', process.env.IBM_VERIFY_RP_CLIENT_ID);
+			res.redirect(redirectUrl.toString());
 		});
 
 	} catch (error) {
