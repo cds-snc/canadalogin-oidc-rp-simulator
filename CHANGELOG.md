@@ -1,17 +1,5 @@
 # Changelog
 
-## [1.3.0](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/compare/v1.2.0...v1.3.0) (2026-11-10)
-
-
-### Features
-
-* update branding to match figma ([#112](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/issues/112)) ([12161bf](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/commit/12161bf967b57811887490012b4c66f43b341d58))
-
-
-### Bug Fixes
-
-* Flow when user has a loggedin session when using an RP ([#115](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/issues/115)) ([f4c9d69](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/commit/f4c9d69eb7b252db3c65ac36c3fa0e5b47a35e0c))
-
 ## [1.2.0](https://github.com/cds-snc/canadalogin-oidc-rp-simulator/compare/v1.1.1...v1.2.0) (2026-10-27)
 
 
