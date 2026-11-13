@@ -46,7 +46,7 @@ app.set('trust proxy', 1);
 // Init session
 app.use(session({
 	secret: process.env.SESSION_SECRET,
-	resave: false,
+	resave: true,
 	saveUninitialized: false,
 	store: memoryStore,
 	cookie: {
@@ -72,7 +72,7 @@ app.get('/health', (req, res) => res.status(200).send('OK'));
 
 // const REDIRECT_URI_PATHNAME = new URL(process.env.REDIRECT_URI).pathname;
 const redirectUri = process.env.REDIRECT_URI || 'http://localhost:8080/callback';
-const REDIRECT_URI_PATHNAME = new URL(redirectUri).pathname;
+const REDIRECT_URI_PATHNAME = new URL(process.env.REDIRECT_URI).pathname;
 const configuredRpName = process.env.RP_NAME?.trim();
 const relyingPartyName = configuredRpName && configuredRpName.toLowerCase() !== 'undefined'
 	? configuredRpName
@@ -96,7 +96,7 @@ async function setUpOIDC(req, res) {
 		const client = new issuer.Client({
 			client_id: process.env.IBM_VERIFY_RP_CLIENT_ID,
 			client_secret: process.env.IBM_VERIFY_RP_CLIENT_SECRET,
-			redirect_uris: [redirectUri],
+			redirect_uris: [process.env.REDIRECT_URI],
 			response_types: [RESPONSE_TYPE]
 		});
 
@@ -158,29 +158,20 @@ app.get('/login', async (req, res, next) => {
 		// Generate PKCE parameters
 		const code_verifier = generators.codeVerifier();
 		const code_challenge = generators.codeChallenge(code_verifier);
-		const state = generators.state();
-		const nonce = generators.nonce();
-		const transactions = req.session.oidcTransactions || {};
-		for (const [pendingState, transaction] of Object.entries(transactions)) {
-			if (Date.now() - transaction.createdAt > 10 * 60 * 1000) {
-				delete transactions[pendingState];
-			}
-		}
-		transactions[state] = { code_verifier, nonce, createdAt: Date.now() };
-		req.session.oidcTransactions = transactions;
+		
+		// Store code_verifier in session for later use in token exchange
+		req.session.code_verifier = code_verifier;
 		
 		console.log('PKCE: Generated code_verifier and code_challenge for session');
 		
 		const url = client.authorizationUrl({
 			scope: SCOPE,
-			state,
-			nonce,
-			redirect_uri: redirectUri,
-			response_type: RESPONSE_TYPE,
+			state: generators.state(),
+			redirect_uri: process.env.REDIRECT_URI,
+			response_types: RESPONSE_TYPE,
 			code_challenge,
 			code_challenge_method: 'S256',
 		});
-		await new Promise((resolve, reject) => req.session.save(err => err ? reject(err) : resolve()));
 		res.redirect(url);
 
 	} catch (error) {
@@ -195,23 +186,19 @@ app.get(REDIRECT_URI_PATHNAME, async (req, res) => {
 		const client = await setUpOIDC(req, res);
 		const params = client.callbackParams(req);
 		
-		const state = params.state;
-		const transactions = req.session.oidcTransactions;
-		const transaction = typeof state === 'string' && transactions &&
-			Object.hasOwn(transactions, state) ? transactions[state] : undefined;
-		if (!transaction || Date.now() - transaction.createdAt > 10 * 60 * 1000) {
-			throw new Error('Sign-in request is missing or expired. Please start sign-in again.');
+		// Retrieve the code_verifier from session for PKCE
+		const code_verifier = req.session.code_verifier;
+		if (!code_verifier) {
+			throw new Error('Missing code_verifier in session. PKCE flow may have been compromised.');
 		}
-		delete transactions[state];
-		await new Promise((resolve, reject) => req.session.save(err => err ? reject(err) : resolve()));
 		
 		console.log('PKCE: Using code_verifier from session for token exchange');
 		
-		const tokenSet = await client.callback(redirectUri,
+		const tokenSet = await client.callback(process.env.REDIRECT_URI,
 			params, { 
-				state,
-				nonce: transaction.nonce,
-				code_verifier: transaction.code_verifier
+				state: req.query.state, 
+				nonce: req.session.nonce,
+				code_verifier: code_verifier 
 			});
 		const userinfo = await client.userinfo(tokenSet.access_token);
 
@@ -230,7 +217,9 @@ app.get(REDIRECT_URI_PATHNAME, async (req, res) => {
 			}
 			req.session.tokenSet = tokenSet; // Save tokenSet in session
 			req.session.userinfo = userinfo; // Save userinfo in session
-			req.session.oidcTransactions = transactions;
+			// Clear the code_verifier from session as it's no longer needed
+			delete req.session.code_verifier;
+			console.log('PKCE: code_verifier cleared from session after successful token exchange');
 			res.redirect('/terms');
 		});
 
@@ -395,11 +384,8 @@ app.listen(PORT, () => {
 });
 
 async function refreshAccessToken(req, res) {
-	const tokenSet = new TokenSet(req.session.tokenSet);
-	if (!tokenSet.expired()) {
-		return tokenSet;
-	}
 	const client = await setUpOIDC(req, res);
+	const tokenSet = req.session.tokenSet;
 
 	if (!tokenSet?.refresh_token) {
 		req.session.userinfo = await client.userinfo(tokenSet.access_token);
@@ -429,20 +415,12 @@ async function ensureAuthenticated(req, res, next) {
 			delete req.session.termsAccepted;
 			return res.redirect("/");
 		}
+		// purpose of the refresh token is get the users updated values
 		await refreshAccessToken(req, res);
 
 		next();
 	} catch (err) {
 		console.error("Auth check failed:", err);
-		if (err.error === 'invalid_grant') {
-			delete req.session.tokenSet;
-			delete req.session.userinfo;
-			delete req.session.termsAccepted;
-			return req.session.save((saveError) => {
-				if (saveError) return next(saveError);
-				res.redirect('/login');
-			});
-		}
 
 		handleErrorAndRedirect(req, res, err);
 	}
