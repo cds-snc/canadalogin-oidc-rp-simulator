@@ -73,7 +73,7 @@ app.get('/health', (req, res) => res.status(200).send('OK'));
 // const REDIRECT_URI_PATHNAME = new URL(process.env.REDIRECT_URI).pathname;
 const redirectUri = process.env.REDIRECT_URI || 'http://localhost:8080/callback';
 const REDIRECT_URI_PATHNAME = new URL(redirectUri).pathname;
-const profileManagementApp = process.env.PROFILE_MANAGEMENTAPP || 'http://localhost:3000';
+const profileManagementApp = process.env.PROFILE_MANAGEMENT_URL || 'http://localhost:3000';
 const configuredRpName = process.env.RP_NAME?.trim();
 const relyingPartyName = configuredRpName && configuredRpName.toLowerCase() !== 'undefined'
 	? configuredRpName
@@ -155,7 +155,7 @@ app.get('/login', async (req, res, next) => {
 
 	try {
 		const client = await setUpOIDC(req, res);
-		
+
 		// Generate PKCE parameters
 		const code_verifier = generators.codeVerifier();
 		const code_challenge = generators.codeChallenge(code_verifier);
@@ -169,9 +169,9 @@ app.get('/login', async (req, res, next) => {
 		}
 		transactions[state] = { code_verifier, nonce, createdAt: Date.now() };
 		req.session.oidcTransactions = transactions;
-		
+
 		console.log('PKCE: Generated code_verifier and code_challenge for session');
-		
+
 		const url = client.authorizationUrl({
 			scope: SCOPE,
 			state,
@@ -195,7 +195,7 @@ app.get(REDIRECT_URI_PATHNAME, async (req, res) => {
 	try {
 		const client = await setUpOIDC(req, res);
 		const params = client.callbackParams(req);
-		
+
 		const state = params.state;
 		const transactions = req.session.oidcTransactions;
 		const transaction = typeof state === 'string' && transactions &&
@@ -205,15 +205,15 @@ app.get(REDIRECT_URI_PATHNAME, async (req, res) => {
 		}
 		delete transactions[state];
 		await new Promise((resolve, reject) => req.session.save(err => err ? reject(err) : resolve()));
-		
+
 		console.log('PKCE: Using code_verifier from session for token exchange');
-		
+
 		const tokenSet = await client.callback(redirectUri,
-			params, { 
-				state,
-				nonce: transaction.nonce,
-				code_verifier: transaction.code_verifier
-			});
+			params, {
+			state,
+			nonce: transaction.nonce,
+			code_verifier: transaction.code_verifier
+		});
 		const userinfo = await client.userinfo(tokenSet.access_token);
 
 		// use SID in this sample as session id
@@ -322,7 +322,7 @@ app.post('/backchannel_logout', async (req, res) => {
 		// In this demo, use SID associate to session
 		if (payload.sid) {
 			await destroySessionsBySid(payload.sid);
-		} 
+		}
 
 		// Return successful response
 		return res.status(200).json({ status: 'ok' });
