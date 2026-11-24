@@ -123,6 +123,14 @@ app.get('/', (req, res) => {
 	}
 });
 
+app.get('/register', (req, res) => {
+	res.render('register', {
+		portalShell: true,
+		rpName: relyingPartyName,
+		title: `Register for ${relyingPartyName}`
+	});
+});
+
 app.get('/terms', ensureAuthenticated, (req, res) => {
 	res.render('terms', {
 		title: 'Terms of use and privacy notice statement',
