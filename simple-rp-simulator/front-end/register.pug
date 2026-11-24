@@ -1,0 +1,49 @@
+extends layout.pug
+
+block content
+	.page-content
+		gcds-heading(tag="h1" margin-bottom="400") Register for Canadian Dental Care Plan
+		
+		gcds-text(margin-bottom="400")
+			| To register, you must have a CanadaLogin account. When creating your account, you will be asked to provide personal information and confirm that it is your own, accurate, and up to date.
+		
+		gcds-heading(tag="h2" margin-bottom="300") When registering, you must:
+		
+		.registration-steps
+			ul(style="margin-top: 0.5rem; margin-bottom: 0; margin-left: 1.25rem; padding-left: 0;")
+				li(style="margin: 0;")
+					gcds-text(margin-bottom="0") Create a CanadaLogin account using your email address or sign in
+				li(style="margin: 0;")
+					gcds-text(margin-bottom="0") Provide personal verified information to set up your Canadian Dental Care Plan account
+				li(style="margin: 0;")
+					gcds-text(margin-bottom="0") Complete an identity proofing process to get access to the service. You can verify your identity one of the following ways:
+					ul(style="margin: 0;")
+						li(style="margin: 0;")
+							gcds-text(margin-bottom="0")
+								strong Online: 
+								| Take a photo of your government-issued ID and take a selfie with your phone, or use a provincial verification (BC or AB).
+						li(style="margin: 0;")
+							gcds-text(margin-bottom="0")
+								strong In person: 
+								| Visit a participating Service Canada or Canada Post location
+				gcds-details(details-title="List of acceptable IDs" margin-top="200" margin-bottom="0")
+								ol(style="margin: 0; padding-left: 0;")
+									li(style="margin: 0;")
+										gcds-text(margin-bottom="0") Provincial/Territorial Driver's licence
+									li(style="margin: 0;")
+										gcds-text(margin-bottom="0") Provincial/Territorial Photo ID Health card
+									li(style="margin: 0;")
+										gcds-text(margin-bottom="0") Provincial/Territorial Photo ID/Service card
+									li(style="margin: 0;")
+										gcds-text(margin-bottom="0") Canadian and International Passport
+									li(style="margin: 0;")
+										gcds-text(margin-bottom="0") Canadian PR Card
+									li(style="margin: 0;")
+										gcds-text(margin-bottom="0") Secure Certificate of Indian Status
+				li(style="margin: 0;")
+					gcds-text(margin-bottom="0") Keep your sign-in information secure and do not share your password or account details with anyone
+				li(style="margin: 0;")
+					gcds-text(margin-bottom="0") Agree that Canadian Dental Care Plan may contact you to confirm information or request additional documents
+		
+		.button-wrapper(style="width: 100%; margin-top: 3rem;")
+			gcds-button(type="link" size="default" href="/login") Continue

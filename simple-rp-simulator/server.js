@@ -113,7 +113,7 @@ async function setUpOIDC(req, res) {
 // Home route
 app.get('/', (req, res) => {
 	if (req.session.tokenSet) {
-		res.redirect(`${profileManagementApp}/en/identity-verification`);
+		res.redirect(`${profileManagementApp}/en/identity-verification/required`);
 	} else {
 		res.render('index', {
 			portalShell: true,
@@ -232,7 +232,7 @@ app.get(REDIRECT_URI_PATHNAME, async (req, res) => {
 			req.session.tokenSet = tokenSet; // Save tokenSet in session
 			req.session.userinfo = userinfo; // Save userinfo in session
 			req.session.oidcTransactions = transactions;
-			const redirectUrl = new URL(`${profileManagementApp}/en/identity-verification`);
+			const redirectUrl = new URL(`${profileManagementApp}/en/identity-verification/required`);
 			redirectUrl.searchParams.set('rp_client_id', process.env.IBM_VERIFY_RP_CLIENT_ID);
 			res.redirect(redirectUrl.toString());
 		});
