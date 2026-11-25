@@ -15,6 +15,7 @@ block content
 					a(href="#") Canadian Dental Care Plan
 					|  with your CanadaLogin you are subject to its terms.
 		gcds-details(details-title="Full terms of use")
+			gcds-text(size="small" margin-bottom="0") Full text for terms and conditions will be here
 		gcds-heading(tag="h2" margin-top="300") Privacy Notice Statement
 		ul
 			li
@@ -24,6 +25,8 @@ block content
 			li
 				gcds-text(size="small" margin-bottom="0") Use CanadaLogin only for lawful and authorized purposes.
 		gcds-details(details-title="Full privacy notice statement")
+			gcds-text(size="small" margin-bottom="0") Full text for privacy notice will be here
+
 		form(action="/terms" method="post")
 			input(type="hidden" name="_csrf" value=csrfToken)
 			gcds-checkboxes.acknowledgement(name="acknowledgement" error-message=termsError options='[{"id":"terms-acknowledgement","value":"accepted","label":"I acknowledge that I have read the privacy notice, and I have read and agree to the Terms."}]')
